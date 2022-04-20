@@ -1,0 +1,14 @@
+{
+    "CONTRACT_ADDRESS": "0x64fA098348372d5D882dB25f3Eec677491e43793",
+    "SCAN_LINK": "https://rinkeby.etherscan.io/address/0x64fA098348372d5D882dB25f3Eec677491e43793",
+    "NETWORK": {
+        "NAME": "Rinkeby",
+        "SYMBOL": "ETH",
+        "ID": 4
+    },
+    "NFT_NAME": "Moonlight Birdy",
+    "SYMBOL": "MB",
+    "GAS_LIMIT": 285000,
+    "MARKETPLACE": "Opensea",
+    "MARKETPLACE_LINK": "https://opensea.io"
+}
