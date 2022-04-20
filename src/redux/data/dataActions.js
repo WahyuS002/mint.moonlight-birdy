@@ -26,12 +26,16 @@ export const fetchData = () => {
     return async (dispatch) => {
         dispatch(fetchDataRequest())
         try {
-            let totalSupply = await store.getState().blockchain.smartContract.methods.totalSupply().call()
             let cost = await store.getState().blockchain.smartContract.methods.cost().call()
-            let paused = await store.getState().blockchain.smartContract.methods.paused().call()
-            let maxMintAmountPerAddress = await store.getState().blockchain.smartContract.methods.maxMintAmountPerAddress().call()
             let maxSupply = await store.getState().blockchain.smartContract.methods.maxSupply().call()
-            let isWhitelistMintEnabled = await store.getState().blockchain.smartContract.methods.whitelistMintEnabled().call()
+            let maxFreeMintSupply = await store.getState().blockchain.smartContract.methods.maxFreeMintSupply().call()
+            let maxFreeMintAmountPerAddr = await store.getState().blockchain.smartContract.methods.maxFreeMintAmountPerAddr().call()
+            let maxMintAmountPerTx = await store.getState().blockchain.smartContract.methods.maxMintAmountPerTx().call()
+
+            let isFreeMintOpen = await store.getState().blockchain.smartContract.methods.isFreeMintOpen().call()
+            let paused = await store.getState().blockchain.smartContract.methods.paused().call()
+
+            let totalSupply = await store.getState().blockchain.smartContract.methods.totalSupply().call()
 
             let currentWallet = await store.getState().blockchain.account
             let walletOfOwner = await store.getState().blockchain.smartContract.methods.walletOfOwner(currentWallet).call()
@@ -39,13 +43,17 @@ export const fetchData = () => {
 
             dispatch(
                 fetchDataSuccess({
-                    totalSupply,
                     cost,
-                    paused,
-                    maxMintAmountPerAddress,
-                    isWhitelistMintEnabled,
-                    currentWalletSupply,
                     maxSupply,
+                    maxFreeMintSupply,
+                    maxFreeMintAmountPerAddr,
+                    maxMintAmountPerTx,
+
+                    isFreeMintOpen,
+                    paused,
+
+                    totalSupply,
+                    currentWalletSupply,
                 })
             )
         } catch (err) {

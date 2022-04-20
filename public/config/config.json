@@ -8,6 +8,7 @@
     },
     "NFT_NAME": "Moonlight Birdy",
     "SYMBOL": "MB",
+    "MAX_SUPPLY": "8888",
     "GAS_LIMIT": 285000,
     "MARKETPLACE": "Opensea",
     "MARKETPLACE_LINK": "https://opensea.io"

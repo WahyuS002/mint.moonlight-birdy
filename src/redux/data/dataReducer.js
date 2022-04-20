@@ -1,14 +1,19 @@
 const initialState = {
     loading: false,
-    totalSupply: 0,
-    cost: 0,
     error: false,
     errorMsg: '',
-    paused: false,
-    maxMintAmountPerAddress: 0,
-    isWhitelistMintEnabled: false,
-    currentWalletSupply: 0,
+
+    cost: 0,
     maxSupply: 0,
+    maxFreeMintSupply: 0,
+    maxFreeMintAmountPerAddr: 0,
+    maxMintAmountPerTx: 0,
+
+    isFreeMintOpen: false,
+    paused: false,
+
+    totalSupply: 0,
+    currentWalletSupply: 0,
 }
 
 const dataReducer = (state = initialState, action) => {
@@ -24,15 +29,20 @@ const dataReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                totalSupply: action.payload.totalSupply,
-                cost: action.payload.cost,
                 error: false,
                 errorMsg: '',
-                paused: action.payload.paused,
-                maxMintAmountPerAddress: action.payload.maxMintAmountPerAddress,
-                isWhitelistMintEnabled: action.payload.isWhitelistMintEnabled,
-                currentWalletSupply: action.payload.currentWalletSupply,
+
+                cost: action.payload.cost,
                 maxSupply: action.payload.maxSupply,
+                maxFreeMintSupply: action.payload.maxFreeMintSupply,
+                maxFreeMintAmountPerAddr: action.payload.maxFreeMintAmountPerAddr,
+                maxMintAmountPerTx: action.payload.maxMintAmountPerTx,
+
+                isFreeMintOpen: action.payload.isFreeMintOpen,
+                paused: action.payload.paused,
+
+                totalSupply: action.payload.totalSupply,
+                currentWalletSupply: action.payload.currentWalletSupply,
             }
         case 'CHECK_DATA_FAILED':
             return {
