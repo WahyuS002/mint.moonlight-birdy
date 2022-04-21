@@ -26,8 +26,9 @@ export const fetchData = () => {
     return async (dispatch) => {
         dispatch(fetchDataRequest())
         try {
+            let MAX_SUPPLY = await store.getState().blockchain.smartContract.methods.MAX_SUPPLY().call()
+
             let cost = await store.getState().blockchain.smartContract.methods.cost().call()
-            let maxSupply = await store.getState().blockchain.smartContract.methods.maxSupply().call()
             let maxFreeMintSupply = await store.getState().blockchain.smartContract.methods.maxFreeMintSupply().call()
             let maxFreeMintAmountPerAddr = await store.getState().blockchain.smartContract.methods.maxFreeMintAmountPerAddr().call()
             let maxMintAmountPerTx = await store.getState().blockchain.smartContract.methods.maxMintAmountPerTx().call()
@@ -43,8 +44,8 @@ export const fetchData = () => {
 
             dispatch(
                 fetchDataSuccess({
+                    MAX_SUPPLY,
                     cost,
-                    maxSupply,
                     maxFreeMintSupply,
                     maxFreeMintAmountPerAddr,
                     maxMintAmountPerTx,

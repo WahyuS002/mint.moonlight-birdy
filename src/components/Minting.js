@@ -83,18 +83,67 @@ export default function Minting() {
             toast.info('Minting will open soon.')
         } else {
             console.log('Current Wallet Supply : ', data.currentWalletSupply)
-            if (data.currentWalletSupply + mintAmount > data.maxMintAmountPerAddress) {
-                toast.warning('You have exceeded the max limit of minting.')
-            } else if (parseInt(mintAmount) + parseInt(data.totalSupply) > data.maxSupply) {
+            if (data.currentWalletSupply + mintAmount > data.maxMintAmountPerAddress || parseInt(mintAmount) + parseInt(data.totalSupply) > data.MAX_SUPPLY) {
                 toast.warning('You have exceeded the max limit of minting.')
             } else {
-                // if (data.isWhitelistMintEnabled) {
-                //     return whitelistMintTokens(gasLimit, totalCostWei)
-                // } else {
-                //     return mintTokens(gasLimit, totalCostWei)
-                // }
+                if (data.isFreeMintOpen) {
+                    return freeMintTokens(gasLimit)
+                } else {
+                    return mintTokens(gasLimit, totalCostWei)
+                }
             }
         }
+    }
+
+    const freeMintTokens = (gasLimit) => {
+        if (mintAmount > data.maxFreeMintAmountPerAddr) {
+            toast.warning('Exceeds max free mint per wallet!')
+        } else if (mintAmount > data.maxFreeMintSupply) {
+            toast.warning('Exceeds max free mint supply!')
+        } else {
+            toast.info(`Minting your free ${CONFIG.NFT_NAME}...`)
+            setClaimingNft(true)
+            return blockchain.smartContract.methods
+                .freeMint(mintAmount)
+                .send({
+                    gasLimit: gasLimit,
+                    to: CONFIG.CONTRACT_ADDRESS,
+                    from: blockchain.account,
+                })
+                .once('error', () => {
+                    toast.error('Sorry, something went wrong please try again later.')
+                    setClaimingNft(false)
+                })
+                .then(() => {
+                    toast.success(`WOW, the ${CONFIG.NFT_NAME} is yours! go visit Opensea.io to view it.`)
+                    setClaimingNft(false)
+                    dispatch(fetchData(blockchain.account))
+                })
+        }
+    }
+
+    const mintTokens = (gasLimit, totalCostWei) => {
+        toast.info(`Minting your ${CONFIG.NFT_NAME}...`)
+        setClaimingNft(true)
+        return blockchain.smartContract.methods
+            .mint(mintAmount)
+            .send({
+                gasLimit: gasLimit,
+                to: CONFIG.CONTRACT_ADDRESS,
+                from: blockchain.account,
+                value: totalCostWei,
+            })
+            .once('error', (err) => {
+                console.log(err)
+                toast.error('Sorry, something went wrong please try again later.')
+                setClaimingNft(false)
+            })
+            .then((receipt) => {
+                console.log(receipt)
+                toast.success(`WOW, the ${CONFIG.NFT_NAME} is yours! go visit Opensea.io to view it.`)
+                setClaimingNft(false)
+                dispatch(fetchData(blockchain.account))
+            })
     }
 
     useEffect(() => {
@@ -124,10 +173,16 @@ export default function Minting() {
 
                     {blockchain.account !== null && !data.loading ? (
                         <div>
-                            {data.isFreeMintOpen ? (
-                                <p className="max-w-xs text-sm my-6 text-center">Claim your free {data.maxFreeMintAmountPerAddr} Moonlight Birdy. 2 Max per wallet.</p>
+                            {data.paused ? (
+                                <p className="max-w-xs text-sm my-6 text-center">Smart contract is paused</p>
                             ) : (
-                                <p className="max-w-xs text-sm my-6 text-center">0 ETH per Moonlight Birdy. 5 max per transaction. 20 Max per wallet.</p>
+                                <>
+                                    {data.isFreeMintOpen ? (
+                                        <p className="max-w-xs text-sm my-6 text-center">Claim your free {data.maxFreeMintAmountPerAddr} Moonlight Birdy. 2 Max per wallet.</p>
+                                    ) : (
+                                        <p className="max-w-xs text-sm my-6 text-center">{data.cost} ETH per Moonlight Birdy. 5 max per transaction. 20 Max per wallet.</p>
+                                    )}
+                                </>
                             )}
 
                             <div className="flex justify-center items-center space-x-4 mt-6">
@@ -150,7 +205,7 @@ export default function Minting() {
                                     className="bg-orange-400 hover:bg-orange-500 transition-all duration-300 ease-in-out px-5 py-2 rounded-full text-gray-900 font-bold"
                                     onClick={(e) => {
                                         e.preventDefault()
-                                        dispatch(connect())
+                                        claimNFTs()
                                         getData()
                                     }}
                                 >
