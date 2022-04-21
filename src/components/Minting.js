@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
 
+import Web3 from 'web3'
 import { useDispatch, useSelector } from 'react-redux'
 import { connect } from '../redux/blockchain/blockchainActions'
 import { fetchData } from '../redux/data/dataActions'
 
 import { toast } from 'react-toastify'
-
-import Web3 from 'web3'
 
 const truncate = (input, len) => (input.length > len ? `${input.substring(0, len)}...` : input)
 let web3 = new Web3()
@@ -194,7 +193,7 @@ export default function Minting() {
                                         <p className="max-w-xs text-sm my-6 text-center">Claim your free {data.maxFreeMintAmountPerAddr} Moonlight Birdy. 2 Max per wallet.</p>
                                     ) : (
                                         <p className="max-w-xs text-sm my-6 text-center">
-                                            {web3.utils.fromWei(data.cost, 'ether')} ETH per Moonlight Birdy. {data.maxMintAmountPerTx} max per transaction. 20 Max per wallet.
+                                            {web3.utils.fromWei(String(data.cost), 'ether')} ETH per Moonlight Birdy. {data.maxMintAmountPerTx} max per transaction. 20 Max per wallet.
                                         </p>
                                     )}
                                 </>
@@ -266,7 +265,7 @@ export default function Minting() {
 
                     {blockchain.account === '' || blockchain.smartContract === null ? (
                         <div>
-                            <p className="text-sm text-center my-6">Connect to the Ethereum network</p>
+                            <p className="text-sm text-center my-6">Connect to the {CONFIG.NETWORK.NAME} network</p>
                             <div className="flex justify-center">
                                 <button
                                     className="bg-orange-400 hover:bg-orange-500 transition-all duration-300 ease-in-out px-5 py-2 rounded-full text-gray-900 font-bold"
