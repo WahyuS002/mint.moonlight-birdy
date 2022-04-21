@@ -1,6 +1,7 @@
 [
     {
         "inputs": [
+            { "internalType": "uint256", "name": "_maxSupply", "type": "uint256" },
             { "internalType": "uint256", "name": "_cost", "type": "uint256" },
             { "internalType": "uint256", "name": "_maxFreeMintSupply", "type": "uint256" },
             { "internalType": "uint256", "name": "_maxMintAmountPerTx", "type": "uint256" },
@@ -60,7 +61,6 @@
         "name": "Transfer",
         "type": "event"
     },
-    { "inputs": [], "name": "MAX_SUPPLY", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
     {
         "inputs": [
             { "internalType": "address", "name": "to", "type": "address" },
@@ -78,8 +78,8 @@
         "stateMutability": "view",
         "type": "function"
     },
-    { "inputs": [{ "internalType": "uint256", "name": "_tokenId", "type": "uint256" }], "name": "burn", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
     { "inputs": [], "name": "cost", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+    { "inputs": [{ "internalType": "uint256", "name": "_maxSupply", "type": "uint256" }], "name": "cutMaxSupply", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
     { "inputs": [{ "internalType": "uint256", "name": "_mintAmount", "type": "uint256" }], "name": "freeMint", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
     {
         "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }],
@@ -103,6 +103,7 @@
     { "inputs": [], "name": "maxFreeMintAmountPerAddr", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
     { "inputs": [], "name": "maxFreeMintSupply", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
     { "inputs": [], "name": "maxMintAmountPerTx", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+    { "inputs": [], "name": "maxSupply", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
     { "inputs": [{ "internalType": "uint256", "name": "_mintAmount", "type": "uint256" }], "name": "mint", "outputs": [], "stateMutability": "payable", "type": "function" },
     {
         "inputs": [

@@ -3,7 +3,7 @@ const initialState = {
     error: false,
     errorMsg: '',
 
-    MAX_SUPPLY: 0,
+    maxSupply: 0,
     cost: 0,
     maxFreeMintSupply: 0,
     maxFreeMintAmountPerAddr: 0,
@@ -32,7 +32,7 @@ const dataReducer = (state = initialState, action) => {
                 error: false,
                 errorMsg: '',
 
-                MAX_SUPPLY: action.payload.MAX_SUPPLY,
+                maxSupply: action.payload.maxSupply,
                 cost: action.payload.cost,
                 maxFreeMintSupply: action.payload.maxFreeMintSupply,
                 maxFreeMintAmountPerAddr: action.payload.maxFreeMintAmountPerAddr,

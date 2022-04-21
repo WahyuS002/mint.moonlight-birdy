@@ -6,7 +6,10 @@ import { fetchData } from '../redux/data/dataActions'
 
 import { toast } from 'react-toastify'
 
+import Web3 from 'web3'
+
 const truncate = (input, len) => (input.length > len ? `${input.substring(0, len)}...` : input)
+let web3 = new Web3()
 
 export default function Minting() {
     const dispatch = useDispatch()
@@ -83,7 +86,7 @@ export default function Minting() {
             toast.info('Minting will open soon.')
         } else {
             console.log('Current Wallet Supply : ', data.currentWalletSupply)
-            if (data.currentWalletSupply + mintAmount > data.maxMintAmountPerAddress || parseInt(mintAmount) + parseInt(data.totalSupply) > data.MAX_SUPPLY) {
+            if (parseInt(mintAmount) + parseInt(data.totalSupply) > parseInt(data.maxSupply)) {
                 toast.warning('You have exceeded the max limit of minting.')
             } else {
                 if (data.isFreeMintOpen) {
@@ -96,9 +99,9 @@ export default function Minting() {
     }
 
     const freeMintTokens = (gasLimit) => {
-        if (mintAmount > data.maxFreeMintAmountPerAddr) {
+        if (parseInt(data.currentWalletSupply) + mintAmount > parseInt(data.maxFreeMintAmountPerAddr)) {
             toast.warning('Exceeds max free mint per wallet!')
-        } else if (mintAmount > data.maxFreeMintSupply) {
+        } else if (parseInt(data.totalSupply) + mintAmount > parseInt(data.maxFreeMintSupply)) {
             toast.warning('Exceeds max free mint supply!')
         } else {
             toast.info(`Minting your free ${CONFIG.NFT_NAME}...`)
@@ -123,27 +126,35 @@ export default function Minting() {
     }
 
     const mintTokens = (gasLimit, totalCostWei) => {
-        toast.info(`Minting your ${CONFIG.NFT_NAME}...`)
-        setClaimingNft(true)
-        return blockchain.smartContract.methods
-            .mint(mintAmount)
-            .send({
-                gasLimit: gasLimit,
-                to: CONFIG.CONTRACT_ADDRESS,
-                from: blockchain.account,
-                value: totalCostWei,
-            })
-            .once('error', (err) => {
-                console.log(err)
-                toast.error('Sorry, something went wrong please try again later.')
-                setClaimingNft(false)
-            })
-            .then((receipt) => {
-                console.log(receipt)
-                toast.success(`WOW, the ${CONFIG.NFT_NAME} is yours! go visit Opensea.io to view it.`)
-                setClaimingNft(false)
-                dispatch(fetchData(blockchain.account))
-            })
+        if (parseInt(data.currentWalletSupply) + mintAmount > parseInt(data.maxMintAmountPerTx)) {
+            toast.warning('Exceeds max mint amount per tx!')
+        } else if (parseInt(data.totalSupply) + mintAmount > parseInt(data.maxSupply)) {
+            toast.warning('Max supply exceeded!')
+        } else if (parseInt(data.currentWalletSupply) + mintAmount > 20) {
+            toast.warning('Exceeds max mint per wallet!')
+        } else {
+            toast.info(`Minting your ${CONFIG.NFT_NAME}...`)
+            setClaimingNft(true)
+            return blockchain.smartContract.methods
+                .mint(mintAmount)
+                .send({
+                    gasLimit: gasLimit,
+                    to: CONFIG.CONTRACT_ADDRESS,
+                    from: blockchain.account,
+                    value: totalCostWei,
+                })
+                .once('error', (err) => {
+                    console.log(err)
+                    toast.error('Sorry, something went wrong please try again later.')
+                    setClaimingNft(false)
+                })
+                .then((receipt) => {
+                    console.log(receipt)
+                    toast.success(`WOW, the ${CONFIG.NFT_NAME} is yours! go visit Opensea.io to view it.`)
+                    setClaimingNft(false)
+                    dispatch(fetchData(blockchain.account))
+                })
+        }
     }
 
     useEffect(() => {
@@ -168,7 +179,9 @@ export default function Minting() {
                 <div>
                     <h1 className="mt-6 font-semibold text-2xl text-center">Get Your Moonlight Birdy</h1>
                     <div className="flex justify-center my-2">
-                        <span className="px-3 bg-white text-gray-900 rounded-full text-sm font-bold py-[0.2rem]">0/{CONFIG.MAX_SUPPLY}</span>
+                        <span className="px-3 bg-white text-gray-900 rounded-full text-sm font-bold py-[0.2rem]">
+                            {blockchain.account && !data.loading ? data.totalSupply : 'X'}/{CONFIG.MAX_SUPPLY}
+                        </span>
                     </div>
 
                     {blockchain.account !== null && !data.loading ? (
@@ -180,53 +193,74 @@ export default function Minting() {
                                     {data.isFreeMintOpen ? (
                                         <p className="max-w-xs text-sm my-6 text-center">Claim your free {data.maxFreeMintAmountPerAddr} Moonlight Birdy. 2 Max per wallet.</p>
                                     ) : (
-                                        <p className="max-w-xs text-sm my-6 text-center">{data.cost} ETH per Moonlight Birdy. 5 max per transaction. 20 Max per wallet.</p>
+                                        <p className="max-w-xs text-sm my-6 text-center">
+                                            {web3.utils.fromWei(data.cost, 'ether')} ETH per Moonlight Birdy. {data.maxMintAmountPerTx} max per transaction. 20 Max per wallet.
+                                        </p>
                                     )}
                                 </>
                             )}
 
-                            <div className="flex justify-center items-center space-x-4 mt-6">
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        decrementMintAmount()
-                                    }}
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className={(canDecrement ? 'text-orange-400 hover:text-orange-500' : 'text-gray-500 cursor-not-allowed') + ' h-8 w-8 transition-all duration-300 ease-in-out'}
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
+                            {claimingNft ? (
+                                <div className="flex justify-center mt-6">
+                                    <button
+                                        className="bg-orange-400 hover:bg-orange-500 transition-all duration-300 ease-in-out px-5 py-2 rounded-full text-gray-900 font-bold cursor-not-allowed"
+                                        disabled
                                     >
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
-                                    </svg>
-                                </button>
-                                <button
-                                    className="bg-orange-400 hover:bg-orange-500 transition-all duration-300 ease-in-out px-5 py-2 rounded-full text-gray-900 font-bold"
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        claimNFTs()
-                                        getData()
-                                    }}
-                                >
-                                    Mint {mintAmount} NFT
-                                </button>
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        incrementMintAmount()
-                                    }}
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className={(canIncrement ? 'text-orange-400 hover:text-orange-500' : 'text-gray-500 cursor-not-allowed') + ' h-8 w-8 transition-all duration-300 ease-in-out'}
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
+                                        Minting your nft . . .
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="flex justify-center items-center space-x-4 mt-6">
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            decrementMintAmount()
+                                        }}
                                     >
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
-                                    </svg>
-                                </button>
-                            </div>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className={
+                                                (canDecrement ? 'text-orange-400 hover:text-orange-500' : 'text-gray-500 cursor-not-allowed') + ' h-8 w-8 transition-all duration-300 ease-in-out'
+                                            }
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <button
+                                        className="bg-orange-400 hover:bg-orange-500 transition-all duration-300 ease-in-out px-5 py-2 rounded-full text-gray-900 font-bold"
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            claimNFTs()
+                                            getData()
+                                        }}
+                                    >
+                                        Mint {mintAmount} NFT
+                                    </button>
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            incrementMintAmount()
+                                        }}
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className={
+                                                (canIncrement ? 'text-orange-400 hover:text-orange-500' : 'text-gray-500 cursor-not-allowed') + ' h-8 w-8 transition-all duration-300 ease-in-out'
+                                            }
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     ) : null}
 
