@@ -9,7 +9,7 @@ export const roadmaps = [
     },
     {
         title: 'Benefit',
-        description: 'We will make sure to collaborate with several projects to reward holders of a free mint or whitelist. we also allocate the profit from mint which is used to reward holders.',
+        description: 'We will make sure to collaborate with several projects to reward holders of a free mint or whitelist.',
     },
     {
         title: 'Marketing ',
