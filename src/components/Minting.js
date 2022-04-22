@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { connect } from '../redux/blockchain/blockchainActions'
 import { fetchData } from '../redux/data/dataActions'
 
+import mintingImage from '../assets/images/minting.png'
 import { toast } from 'react-toastify'
 
 const truncate = (input, len) => (input.length > len ? `${input.substring(0, len)}...` : input)
@@ -168,12 +169,7 @@ export default function Minting() {
         <div className="flex justify-center">
             <div className="p-12 relative bg-gray-900 border-gray-600 border-2 max-w-xl rounded-xl">
                 <div className="flex justify-center">
-                    <img
-                        className="absolute -top-12 w-24 h-24 rounded-full border-gray-600 border-2"
-                        src="https://lh3.googleusercontent.com/rYTH7ErBre_PhOVFq3dDxPD-6j7nQcg7Ny-cSQl39k7dpdN7v6qifpFxnl2n_Ld9I2-F5B6KF9P3-Dnozd3fcEYrkf9Z6GduqPfpMg=w600"
-                        alt="MintingImage"
-                        draggable="false"
-                    />
+                    <img className="absolute -top-12 w-24 h-24 rounded-full border-gray-600 border-[3px]" src={mintingImage} alt="MintingImage" draggable="false" />
                 </div>
                 <div>
                     <h1 className="mt-6 font-semibold text-2xl text-center">Get Your Moonlight Birdy</h1>
