@@ -19,10 +19,10 @@ function App() {
                     <Minting />
                 </div>
             </div>
-            {/* <div className="mt-12">
+            <div className="mt-12">
                 <MovementImages />
-            </div> */}
-            <div className="mx-5 md:mx-20 -mt-40 md:mt-12">
+            </div>
+            <div className="mx-5 md:mx-20 mt-10 md:mt-12">
                 <Roadmap />
             </div>
         </div>
