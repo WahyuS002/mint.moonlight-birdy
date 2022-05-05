@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { connect } from '../redux/blockchain/blockchainActions'
 import { fetchData } from '../redux/data/dataActions'
 
+import { contains, getProofForAddress } from '../lib/Whitelist'
+
 import mintingImage from '../assets/images/minting.png'
 import { toast } from 'react-toastify'
 
@@ -89,11 +91,47 @@ export default function Minting() {
             if (parseInt(mintAmount) + parseInt(data.totalSupply) > parseInt(data.maxSupply)) {
                 toast.warning('You have exceeded the max limit of minting.')
             } else {
-                if (data.isFreeMintOpen) {
+                if (data.whitelistMintEnabled) {
+                    if (!contains(blockchain.account)) {
+                        toast.warning('This address is not WL!')
+                    } else {
+                        return whitelistMintTokens(gasLimit)
+                    }
+                } else if (data.isFreeMintOpen) {
                     return freeMintTokens(gasLimit)
                 } else {
                     return mintTokens(gasLimit, totalCostWei)
                 }
+            }
+        }
+    }
+
+    const whitelistMintTokens = (gasLimit) => {
+        // Check address is already claimed
+        if (data.getClaimedWhitelistValue) {
+            toast.warning("You're already claimed NFT on whitelist mint phase!")
+        } else {
+            if (mintAmount !== 1) {
+                toast.warning('You can only minting 1 NFT on whitelist mint phase!')
+            } else {
+                toast.info(`WL Minting for free ${CONFIG.NFT_NAME}`)
+                setClaimingNft(true)
+                return blockchain.smartContract.methods
+                    .whitelistMint(mintAmount, getProofForAddress(blockchain.account))
+                    .send({
+                        gasLimit: gasLimit,
+                        to: CONFIG.CONTRACT_ADDRESS,
+                        from: blockchain.account,
+                    })
+                    .once('error', () => {
+                        toast.error('Sorry, something went wrong please try again later.')
+                        setClaimingNft(false)
+                    })
+                    .then(() => {
+                        toast.success(`WOW, the ${CONFIG.NFT_NAME} is yours! go visit Opensea.io to view it.`)
+                        setClaimingNft(false)
+                        dispatch(fetchData(blockchain.account))
+                    })
             }
         }
     }
@@ -185,13 +223,15 @@ export default function Minting() {
                                 <p className="max-w-xs text-sm my-6 text-center">Smart contract is paused</p>
                             ) : (
                                 <>
+                                    {data.whitelistMintEnabled ? <p className="max-w-xs text-sm my-6 text-center">Whitelist Mint. 1 Free mint per wallet</p> : null}
                                     {data.isFreeMintOpen ? (
-                                        <p className="max-w-xs text-sm my-6 text-center">Claim your free {data.maxFreeMintAmountPerAddr} Moonlight Birdy. 2 Max per wallet.</p>
-                                    ) : (
+                                        <p className="max-w-xs text-sm my-6 text-center">Public Free Mint. Claim your free {data.maxFreeMintAmountPerAddr} Moonlight Birdy.</p>
+                                    ) : null}
+                                    {!data.isFreeMintOpen && !data.whitelistMintEnabled ? (
                                         <p className="max-w-xs text-sm my-6 text-center">
                                             {web3.utils.fromWei(String(data.cost), 'ether')} ETH per Moonlight Birdy. {data.maxMintAmountPerTx} max per transaction. 20 Max per wallet.
                                         </p>
-                                    )}
+                                    ) : null}
                                 </>
                             )}
 
