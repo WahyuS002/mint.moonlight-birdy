@@ -27,8 +27,7 @@ const dropIn = {
 export default function Modal({ handleClose }) {
     return (
         <Backdrop onClick={handleClose}>
-            <motion.div onClick={(e) => e.stopPropagation()} variants={dropIn} initial="hidden" animate="visible" exit="exit" className="flex justify-center">
-                {/* <img className="w-1/2 h-1/2 rounded-3xl" src={modalImage} alt="" /> */}
+            <motion.div onClick={(e) => e.stopPropagation()} variants={dropIn} initial="hidden" animate="visible" exit="exit" className="flex justify-center overflow-hidden">
                 <div className="h-[60vh] w-[70vh] rounded-3xl bg-no-repeat bg-cover bg-[url('./assets/images/modal_image.jpg')]">
                     <div className="flex h-[60vh] justify-center font-grandstander">
                         <div className="m-auto text-center">

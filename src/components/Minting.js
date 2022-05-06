@@ -175,7 +175,7 @@ export default function Minting() {
     }
 
     const mintTokens = (gasLimit, totalCostWei) => {
-        if (parseInt(data.currentWalletSupply) + mintAmount > parseInt(data.maxMintAmountPerTx)) {
+        if (mintAmount > parseInt(data.maxMintAmountPerTx)) {
             toast.warning('Exceeds max mint amount per tx!')
         } else if (parseInt(data.totalSupply) + mintAmount > parseInt(data.maxSupply)) {
             toast.warning('Max supply exceeded!')
