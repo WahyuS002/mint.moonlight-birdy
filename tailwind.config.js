@@ -4,6 +4,7 @@ module.exports = {
         extend: {
             fontFamily: {
                 rubik: 'Rubik',
+                grandstander: 'Grandstander',
             },
         },
     },

@@ -10,6 +10,10 @@ import { contains, getProofForAddress } from '../lib/Whitelist'
 import mintingImage from '../assets/images/minting.png'
 import { toast } from 'react-toastify'
 
+import Modal from './Modal'
+import useModal from '../hooks/useModal'
+import { AnimatePresence } from 'framer-motion'
+
 const truncate = (input, len) => (input.length > len ? `${input.substring(0, len)}...` : input)
 let web3 = new Web3()
 
@@ -17,8 +21,13 @@ export default function Minting() {
     const dispatch = useDispatch()
     const blockchain = useSelector((state) => state.blockchain)
     const data = useSelector((state) => state.data)
+    const { mintedModalOpen, closeMintedModal, openMintedModal } = useModal()
 
     const [claimingNft, setClaimingNft] = useState(false)
+    // const [modalOpen, setModalOpen] = useState(false)
+
+    // const closeMintedModal = () => setModalOpen(false)
+    // const openMintedModal = () => setModalOpen(false)
 
     const [mintAmount, setMintAmount] = useState(1)
     const [canIncrement, setCanIncrement] = useState(true)
@@ -131,6 +140,7 @@ export default function Minting() {
                         toast.success(`WOW, the ${CONFIG.NFT_NAME} is yours! go visit Opensea.io to view it.`)
                         setClaimingNft(false)
                         dispatch(fetchData(blockchain.account))
+                        openMintedModal()
                     })
             }
         }
@@ -159,6 +169,7 @@ export default function Minting() {
                     toast.success(`WOW, the ${CONFIG.NFT_NAME} is yours! go visit Opensea.io to view it.`)
                     setClaimingNft(false)
                     dispatch(fetchData(blockchain.account))
+                    openMintedModal()
                 })
         }
     }
@@ -191,6 +202,7 @@ export default function Minting() {
                     toast.success(`WOW, the ${CONFIG.NFT_NAME} is yours! go visit Opensea.io to view it.`)
                     setClaimingNft(false)
                     dispatch(fetchData(blockchain.account))
+                    openMintedModal()
                 })
         }
     }
@@ -205,6 +217,9 @@ export default function Minting() {
 
     return (
         <div className="flex justify-center">
+            <AnimatePresence initial={false} exitBeforeEnter={true} onExitComplete={() => null}>
+                {mintedModalOpen && <Modal handleClose={closeMintedModal} />}
+            </AnimatePresence>
             <div className="p-12 relative bg-gray-900 border-gray-600 border-2 max-w-xl rounded-xl">
                 <div className="flex justify-center">
                     <img className="absolute -top-12 w-24 h-24 rounded-full border-gray-600 border-[3px]" src={mintingImage} alt="MintingImage" draggable="false" />
