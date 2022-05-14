@@ -1,10 +1,10 @@
 {
-    "CONTRACT_ADDRESS": "0x90783b24694c0e82b0F5C51997E0915b1293799c",
-    "SCAN_LINK": "https://etherscan.io/address/0x90783b24694c0e82b0F5C51997E0915b1293799c",
+    "CONTRACT_ADDRESS": "0xe44D67ac5de4474E6480a0e56DB2eBA9357d38A8",
+    "SCAN_LINK": "https://etherscan.io/address/0xe44D67ac5de4474E6480a0e56DB2eBA9357d38A8",
     "NETWORK": {
-        "NAME": "Rinkeby",
+        "NAME": "Ethereum",
         "SYMBOL": "ETH",
-        "ID": 4
+        "ID": 1
     },
     "NFT_NAME": "Moonlight Birdy",
     "SYMBOL": "MB",

@@ -24,10 +24,6 @@ export default function Minting() {
     const { mintedModalOpen, closeMintedModal, openMintedModal } = useModal()
 
     const [claimingNft, setClaimingNft] = useState(false)
-    // const [modalOpen, setModalOpen] = useState(false)
-
-    // const closeMintedModal = () => setModalOpen(false)
-    // const openMintedModal = () => setModalOpen(false)
 
     const [mintAmount, setMintAmount] = useState(1)
     const [canIncrement, setCanIncrement] = useState(true)
